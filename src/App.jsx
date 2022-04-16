@@ -1,8 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
+import { Routes, Route } from 'react-router-dom';
 import LandingPage from './Pages/LandingPage';
-import NavbarComponent from './Components/Navbar';
-
+import Navbar from './Components/Navbar';
+import RegisterPage from './Pages/RegisterPage';
+import ProductPage from './Pages/ProductPage';
+import ProductsAdmin from './Pages/ProductsAdmin';
 
 // metode pembuatan komponen pd react menggunakan metode FUNCTIONAL COMPONENT
 // metode ini paling sering digunakan saat ini dibandingkan class component
@@ -17,8 +20,15 @@ function App() { //INITIALIZE COMPONENT
   // return disini skrg bisa langsung mereturn tanpa dalam bentuk string sekarang
   return (
     <div>
-      <NavbarComponent />
-      <LandingPage/>
+      {/* NavbarComponent ga masuk Routes karena bersifat tetap */}
+      <Navbar />
+      <Routes>
+        {/* untuk home pakai path='/' */}
+        <Route path='/' element={<LandingPage />}/>
+        <Route path='/register' element={<RegisterPage />}/>
+        <Route path='/products' element={<ProductPage />}/>
+        <Route path='/products/admin' element={<ProductsAdmin />}/>
+      </Routes>
     </div>
   );
 }

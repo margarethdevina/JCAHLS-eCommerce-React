@@ -2,17 +2,12 @@ import React from 'react';
 // functional component tidak wajib import React namun kalau functional component butuh sistem react hooks pada class component, maka perlu import React
 import { Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, ButtonGroup, NavbarText, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ModalLogin from './ModalLogin';
-import { Link, useNavigate } from 'react-router-dom';
 
 // hooks fitur untuk membuat functional component sama dengan class component
 // adanya hooks, functional component bisa menggunakan state
 // react hooks ada banyak di library manapun
 
 const NavbarComponent = (props) => {
-
-    const navigate = useNavigate();
-    // useNavigate sebuah fungsi yg mereturn sebuah fungsi jadi supaya ga bingung (daripada useNavigate()()) sebaiknya ditampung ke variabel
-    // di javascript fungsi yg mereturn fungsi dinamakan curying? (search google)
 
     // saat ingin styling
     // attribut berisi tipe data string, bisa langsung diselimutin double quotes
@@ -29,39 +24,31 @@ const NavbarComponent = (props) => {
 
     const [openLogin, setOpenLogin] = React.useState(false)
 
-    // const [emailLogin, setEmailLogin] = React.useState("")
+    const [emailLogin, setEmailLogin] = React.useState("")
+    
+    const [passwordLogin, setPasswordLogin] = React.useState("")
 
-    // const [passwordLogin, setPasswordLogin] = React.useState("")
+    const handleEmail = (event) => {
+        // console.log(event.target.value)
+        setEmailLogin(event.target.value)
+    }
 
-    // const handleEmail = (event) => {
-    //     // console.log(event.target.value)
-    //     setEmailLogin(event.target.value)
-    // }
-
-    // const handlePassword = (event) => {
-    //     // console.log(event.target.value)
-    //     setPasswordLogin(event.target.value)
-    // }
-
-    // const handleLogin = () => {
-    //     console.log("email:",emailLogin)
-    //     console.log("password:",passwordLogin)
-    //     setOpenLogin(!openLogin)
-    // }
+    const handlePassword = (event) => {
+        // console.log(event.target.value)
+        setPasswordLogin(event.target.value)
+    }
+    
+    const handleLogin = () => {
+        console.log("email:",emailLogin)
+        console.log("password:",passwordLogin)
+        setOpenLogin(!openLogin)
+    }
 
     return (
         <div >
-            <ModalLogin
-                modalOpen={openLogin}
-                toggleOpen={() => setOpenLogin(!openLogin)}
-            />
-
             {/* navbar responsive di breakpoint medium berarti semua isi navbar muncul, color light = background putih, light untuk membuat tulisan jd gelap krn background putih dan light bertipe data boolean (true/false) valuenya*/}
             <Navbar color="light" light expand="md">
-                {/* cursor pointer untuk munculin tangan saat dihover */}
-                <NavbarBrand 
-                style={{cursor: "pointer"}} 
-                onClick={() => navigate("/")}>
+                <NavbarBrand>
                     <span className="fw-bold">
                         Commerce
                     </span>
@@ -74,13 +61,10 @@ const NavbarComponent = (props) => {
                         navbar
                     >
                         <NavItem>
-                            {/* pakai metode tag link butuh to dan alamat route nya */}
-                            <Link to="/products" className="nav-link">
-                                {/* atribut active untuk menandakan page dibuka */}
-                                <span >
-                                    Products
-                                </span>
-                            </Link>
+                            {/* atribut active untuk menandakan page dibuka */}
+                            <span className="nav-link">
+                                Products
+                            </span>
                         </NavItem>
                         <NavItem>
                             <span className="nav-link">
@@ -90,24 +74,39 @@ const NavbarComponent = (props) => {
                     </Nav>
                     <NavbarText>
                         <ButtonGroup>
-                            <Button
-                                type="button"
-                                color="primary"
-                                onClick={() => setOpenLogin(!openLogin)}>
-                                Login
-                            </Button>
-                            <Button
-                                type="button"
-                                color="secondary"
-                                outline
-                                onClick={() => navigate("/register")}
-                            >
-                                Register
-                            </Button>
+                            <Button color="primary" onClick={() => setOpenLogin(!openLogin)}>Login</Button>
+                            <Button color="secondary" outline>Register</Button>
                         </ButtonGroup>
                     </NavbarText>
                 </Collapse>
             </Navbar>
+
+            <div>
+                <Modal
+                    isOpen={openLogin}
+                >
+                    <ModalHeader
+                        toggle={() => setOpenLogin(!openLogin)}
+                    >
+                        Login Form
+                    </ModalHeader>
+                    <ModalBody>
+                        <p className="form-label">Email</p>
+                        <input type="text" className="form-control" onChange={handleEmail}></input>
+                        <br />
+                        <p className="form-label">Password</p>
+                        <input type="password" className="form-control" onChange={handlePassword}></input>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            color="primary"
+                            onClick={handleLogin}
+                        >
+                            Login
+                        </Button>
+                    </ModalFooter>
+                </Modal>
+            </div>
 
         </div>
     )
