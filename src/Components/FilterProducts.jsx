@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Input, Label } from "reactstrap";
+import Axios from "axios";
+import { API_URL } from "../helper";
 
 const FilterProducts = (props) => {
 
@@ -10,27 +12,73 @@ const FilterProducts = (props) => {
         sort: "Reset"
     })
 
+    const [dbFilter, setDbFilter] = useState([])
+
+    const [idFilter, setIdFilter] = useState("")
+
+    useEffect(() => {
+        getFilter()
+    }, [])
+
+    const getFilter = () => {
+        Axios.get(`${API_URL}/products/?${idFilter}`)
+            .then((response) => {
+                console.log("isi response", response.data)
+                setDbFilter(response.data)
+            }).catch((error) => {
+                console.log(error)
+            })
+    }
+
+    if (dbFilter.length > 0) {
+        console.log("isi dbFilter",dbFilter)
+        props.handleParentCallback(dbFilter)
+    }
+
     const handleInput = (value, property) => {
         setInForm({ ...inForm, [property]: value })
-        console.log("nama,hargaMin,hargaMax,sort", inForm.nama, inForm.hargaMin, inForm.hargaMax, inForm.sort)
+        // console.log("nama,hargaMin,hargaMax,sort", inForm.nama, inForm.hargaMin, inForm.hargaMax, inForm.sort)
     }
 
     const handleFilter = () => {
         alert(`${inForm.nama},${inForm.hargaMin},${inForm.hargaMax},${inForm.sort}`)
-        let Min = Number(inForm.hargaMin)
-        let Max = Number(inForm.hargaMax)
-        
-        if (inForm.nama || Min >= 0 || Max > 0 || inForm.sort != "Reset") {
+        let { nama, hargaMin, hargaMax, sort } = inForm
+
+        if (nama || hargaMin >= 0 || hargaMax > 0 || sort != "Reset") {
+
             let idSearch = ""
+
             props.data.map((value, index) => {
+
                 let hargaProduk = Number(value.harga)
-                if (value.nama.toLowerCase().includes(inForm.nama.toLowerCase()) || hargaProduk >= Min && hargaProduk <= Max) {
-                    console.log("filterNama", value.id)
+
+                if (nama != "" && hargaMin >= 0 && hargaMax > 0 && value.nama.toLowerCase().includes(nama.toLowerCase())) {
+
+                    if (hargaProduk >= hargaMin && hargaProduk <= hargaMax) {
+                        // console.log(hargaProduk)
+                        idSearch += `id=${value.id}&`
+                        // console.log("idSearch", idSearch)
+                    }
+
+                } else if (nama != "" && value.nama.toLowerCase().includes(nama.toLowerCase())) {
+
                     idSearch += `id=${value.id}&`
-                    console.log("idSearch",idSearch)
-                } 
+                    // console.log("idSearch", idSearch)
+
+                } else if (nama == "" && hargaProduk >= hargaMin && hargaMax > 0 && hargaProduk <= hargaMax) {
+
+                    // console.log(hargaProduk)
+                    idSearch += `id=${value.id}&`
+                    // console.log("idSearch", idSearch)
+
+                }
+                setIdFilter(idSearch)
             })
         }
+        
+        console.log(idFilter)
+        getFilter()
+
     }
 
     const handleReset = () => {

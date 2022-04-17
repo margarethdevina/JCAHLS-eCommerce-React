@@ -26,6 +26,10 @@ const ProductPage = (props) => {
             })
     }
 
+    const handleChildCallback = (newdata) => {
+        setDbProducts(newdata)
+    }
+
     const printProducts = () => {
         return dbProducts.map((value, index) => {
             return <div key={value.id} className="col-12 col-md-6 col-lg-4 p-2">
@@ -65,9 +69,10 @@ const ProductPage = (props) => {
             <div className="container py-3">
                 <div className="row">
                     <div className="col-12 col-md-3">
-                            <FilterProducts 
+                        <FilterProducts
                             data={dbProducts}
-                            />
+                            handleParentCallback={handleChildCallback}
+                        />
                     </div>
                     <div className="col-12 col-md-9">
                         <div className="row">
