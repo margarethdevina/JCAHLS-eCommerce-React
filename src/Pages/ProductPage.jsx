@@ -2,8 +2,13 @@ import React, { useState } from "react";
 import Axios from "axios";
 import { Card, CardBody, CardImg, CardTitle } from "reactstrap";
 import { API_URL } from '../helper';
+import { useNavigate } from "react-router-dom";
+import FilterProducts from "../Components/FilterProducts";
+
 
 const ProductPage = (props) => {
+
+    const navigate = useNavigate()
 
     const [dbProducts, setDbProducts] = useState([])
 
@@ -26,6 +31,14 @@ const ProductPage = (props) => {
             return <div key={value.id} className="col-12 col-md-6 col-lg-4 p-2">
                 <Card className="border-0 bg-transparent">
                     <CardImg
+                        onClick={() => navigate(`/product/detail?id=${value.id}`)}
+
+                        // CARA PERTAMA MEMAKAI STATE DAN USELOCATION DI PRODUCTDETAIL
+                        // parameter kedua fungsi navigate untuk mengirimkan data
+                        // onClick={() => navigate("/product/detail", {
+                        //     state: value
+                        // })}
+
                         className='shadow'
                         style={{ borderRadius: "15px" }}
                         src={value.images[0]}
@@ -52,9 +65,9 @@ const ProductPage = (props) => {
             <div className="container py-3">
                 <div className="row">
                     <div className="col-12 col-md-3">
-                        <h5>
-                            Filter
-                        </h5>
+                            <FilterProducts 
+                            data={dbProducts}
+                            />
                     </div>
                     <div className="col-12 col-md-9">
                         <div className="row">

@@ -1,7 +1,7 @@
 import React from "react";
 import Axios from 'axios';
 import { API_URL } from '../helper';
-import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Button } from "reactstrap";
 import ModalDetail from "../Components/ModalDetail";
 
 const ProductsAdmin = (props) => {
@@ -34,6 +34,7 @@ const ProductsAdmin = (props) => {
 
             return <tr key={value.id} className="align-middle">
                 <td className="fw-bold">{index + 1}</td>
+                {/* untuk ngepring index + 1 bisa diapit pakai <th></th> juga karena elemen <th> otomatis ada style fw-bold nya plus 1 kolom & baris ini cuma berisi 1 macam data aja yg mau ditampilkan alas si index+1 itu */}
                 <td>
                     <img
                         alt={`${value.id}-${value.nama}`}
@@ -44,7 +45,7 @@ const ProductsAdmin = (props) => {
                 <td>
                     <span className="fw-bold">{value.nama}</span>
                     <br />
-                    <p className='text-muted'>{value.kategori}</p>
+                    <span className='text-muted'>{value.kategori}</span>
                 </td>
                 <td>{totalStocks.toLocaleString()}</td>
                 <td>IDR {value.harga.toLocaleString()}</td>

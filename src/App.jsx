@@ -6,6 +6,7 @@ import Navbar from './Components/Navbar';
 import RegisterPage from './Pages/RegisterPage';
 import ProductPage from './Pages/ProductPage';
 import ProductsAdmin from './Pages/ProductsAdmin';
+import ProductDetail from "./Pages/ProductDetail";
 
 // metode pembuatan komponen pd react menggunakan metode FUNCTIONAL COMPONENT
 // metode ini paling sering digunakan saat ini dibandingkan class component
@@ -28,6 +29,7 @@ function App() { //INITIALIZE COMPONENT
         <Route path='/register' element={<RegisterPage />}/>
         <Route path='/products' element={<ProductPage />}/>
         <Route path='/products/admin' element={<ProductsAdmin />}/>
+        <Route path='/product/detail' element={<ProductDetail />}/>
       </Routes>
     </div>
   );

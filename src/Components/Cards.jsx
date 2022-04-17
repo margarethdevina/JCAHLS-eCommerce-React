@@ -10,20 +10,20 @@ const Cards = (props) => {
                     <hr />
                     <Card className="border-0">
                         <div className="row">
-                            {/* "col-12 col-md-8 order-sm-2" */}
+                            {/* "col-12 col-md-8 order-md-2" */}
                             <CardBody className={textClass}>
                                 <h5 className="card-title">{value.nama}</h5>
                                 <p className="card-text">{value.deskripsi}</p>
 
                             </CardBody>
-                            {/* "col-12 col-md-4 order-sm-1" */}
+                            {/* "col-12 col-md-4 order-md-1" */}
                             <div className={imgClass}>
                                 <img
                                     src={value.images[0]}
                                     width="500px"
                                     height="500px"
                                     className="img-fluid"
-                                    alt="image" />
+                                    alt={`${value.id}-${value.nama}`} />
                             </div>
                         </div>
                     </Card>
@@ -118,9 +118,9 @@ const Cards = (props) => {
                     </Card>
                 </div>
 
-                {printProducts(0,"col-12 col-md-8 order-sm-1","col-12 col-md-4 order-sm-2")}
-                {printProducts(1,"col-12 col-md-8 order-sm-2","col-12 col-md-4 order-sm-1")}
-                {printProducts(3,"col-12 col-md-8 order-sm-1","col-12 col-md-4 order-sm-2")}
+                {printProducts(0,"col-12 col-md-8 order-md-1","col-12 col-md-4 order-md-2")}
+                {printProducts(1,"col-12 col-md-8 order-md-2","col-12 col-md-4 order-md-1")}
+                {printProducts(3,"col-12 col-md-8 order-md-1","col-12 col-md-4 order-md-2")}
 
             </div>
 
