@@ -17,12 +17,18 @@ const FilterProducts = (props) => {
 
     const handleFilter = () => {
         alert(`${inForm.nama},${inForm.hargaMin},${inForm.hargaMax},${inForm.sort}`)
-
-        if (inForm.nama || inForm.hargaMin >= 0 || inForm.hargaMax || inForm.sort != "Reset") {
+        let Min = Number(inForm.hargaMin)
+        let Max = Number(inForm.hargaMax)
+        
+        if (inForm.nama || Min >= 0 || Max > 0 || inForm.sort != "Reset") {
+            let idSearch = ""
             props.data.map((value, index) => {
-                if (value.nama.toLowerCase().includes(inForm.nama.toLowerCase()) || (value.harga >= inForm.hargaMin && value.harga <= inForm.hargaMax)) {
+                let hargaProduk = Number(value.harga)
+                if (value.nama.toLowerCase().includes(inForm.nama.toLowerCase()) || hargaProduk >= Min && hargaProduk <= Max) {
                     console.log("filterNama", value.id)
-                }
+                    idSearch += `id=${value.id}&`
+                    console.log("idSearch",idSearch)
+                } 
             })
         }
     }
