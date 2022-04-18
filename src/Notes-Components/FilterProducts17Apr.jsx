@@ -12,6 +12,22 @@ const FilterProducts = (props) => {
         sort: "Reset"
     })
 
+    const [dbProductsOri, setDbProductsOri] = useState([])
+
+    useEffect(() => {
+        getProduct()
+    }, [])
+
+    const getProduct = () => {
+        Axios.get(`${API_URL}/products`)
+            .then((response) => {
+                // console.log("isi dbProduct", response.data)
+                setDbProductsOri(response.data)
+            }).catch((error) => {
+                console.log(error);
+            })
+    }
+
     const [dbFilter, setDbFilter] = useState([])
 
     const [idFilter, setIdFilter] = useState("")
@@ -30,8 +46,45 @@ const FilterProducts = (props) => {
             })
     }
 
+    const handleSort = () => {
+        // /posts?_sort=user,views&_order=desc,asc
+        if (inForm.sort == "Harga Asc") {
+            Axios.get(`${API_URL}/products/?_sort=harga&_order=asc`)
+                .then((response) => {
+                    console.log("isi response sortir", response.data)
+                    setDbFilter(response.data)
+                }).catch((error) => {
+                    console.log(error)
+                })
+        } else if (inForm.sort == "Harga Desc") {
+            Axios.get(`${API_URL}/products/?_sort=harga&_order=desc`)
+                .then((response) => {
+                    console.log("isi response sortir", response.data)
+                    setDbFilter(response.data)
+                }).catch((error) => {
+                    console.log(error)
+                })
+        } else if (inForm.sort == "A-Z") {
+            Axios.get(`${API_URL}/products/?_sort=nama&_order=asc`)
+                .then((response) => {
+                    console.log("isi response sortir", response.data)
+                    setDbFilter(response.data)
+                }).catch((error) => {
+                    console.log(error)
+                })
+        } else if (inForm.sort == "Z-A") {
+            Axios.get(`${API_URL}/products/?_sort=nama&_order=desc`)
+                .then((response) => {
+                    console.log("isi response sortir", response.data)
+                    setDbFilter(response.data)
+                }).catch((error) => {
+                    console.log(error)
+                })
+        }
+    }
+
     if (dbFilter.length > 0) {
-        console.log("isi dbFilter",dbFilter)
+        // console.log("isi dbFilter",dbFilter)
         props.handleParentCallback(dbFilter)
     }
 
@@ -75,7 +128,7 @@ const FilterProducts = (props) => {
                 setIdFilter(idSearch)
             })
         }
-        
+
         console.log(idFilter)
         getFilter()
 
@@ -88,6 +141,7 @@ const FilterProducts = (props) => {
             hargaMax: 0,
             sort: "Reset"
         })
+        setDbFilter(dbProductsOri)
     }
 
     return (

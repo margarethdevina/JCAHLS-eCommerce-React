@@ -20,7 +20,7 @@ const ProductsPage = (props) => {
         Axios.get(`${API_URL}/products`)
             .then((response) => {
                 // jika berhasil mendapatkan response
-                // console.log("From Component :", response.data);
+                console.log("From Component :", response.data);
                 setDbProducts(response.data)
             }).catch((error) => {
                 // jika tidak berhasil mendapatkan response
@@ -58,20 +58,20 @@ const ProductsPage = (props) => {
         setFilterName("");
         setFilterMin("");
         setFilterMax("");
-        setOrderData("null")
+        setOrderData("null");
     }
 
-    // console.log(filterMin,filterMax)
+    console.log(filterMin, filterMax)
 
     // Cara 1
     // const handleFilter = () => {
-    //     let filterQuery = "?";
+    //     let filterQuery = `?`;
     //     if (filterName) {
     //         if (filterMax > 0 && filterMin > 0) {
-    //             // kondisi jika form nama dan harga terisi
+    //             // Kondisi jika form nama dan harga terisi
     //             filterQuery += `nama=${filterName}&harga_gte=${filterMin}&harga_lte=${filterMax}`;
     //         } else {
-    //             // kondisi jika form nama saja yang terisi
+    //             // Kondisi jika form nama saja yang terisi
     //             filterQuery += `nama=${filterName}`;
     //         }
     //     } else if (filterMax > 0 && filterMin > 0) {
@@ -85,26 +85,25 @@ const ProductsPage = (props) => {
     //         }).catch((err) => {
     //             console.log(err)
     //         })
-    //         console.log(filterQuery)
     // }
 
     // Cara 2
     const handleFilter = async () => {
         try {
-            let filterQuery = "?";
+            let filterQuery = `?`;
             if (filterName) {
                 if (filterMax > 0 && filterMin > 0) {
-                    // kondisi jika form nama dan harga terisi
+                    // Kondisi jika form nama dan harga terisi
                     filterQuery += `nama=${filterName}&harga_gte=${filterMin}&harga_lte=${filterMax}`;
                 } else {
-                    // kondisi jika form nama saja yang terisi
+                    // Kondisi jika form nama saja yang terisi
                     filterQuery += `nama=${filterName}`;
                 }
             } else if (filterMax > 0 && filterMin > 0) {
                 filterQuery += `harga_gte=${filterMin}&harga_lte=${filterMax}`;
             }
 
-            let response = await Axios.get(`${API_URL}/products${filterQuery}`)
+            let response = await Axios.get(`${API_URL}/products${filterQuery}`);
 
             setDbProducts(response.data)
 
@@ -113,13 +112,12 @@ const ProductsPage = (props) => {
         }
     }
 
-    const handleSort = (e) => {
-        console.log(e.target.value)
-
-        if (e.target.value != "null") {
-            setOrderData(e.target.value)
-            let property = e.target.value.split("-")[0];
-            let order = e.target.value.split("-")[1];
+    const handleSort = (event) => {
+        console.log(event.target.value);
+        if (event.target.value != "null") {
+            setOrderData(event.target.value);
+            let property = event.target.value.split("-")[0];
+            let order = event.target.value.split("-")[1];
             Axios.get(`${API_URL}/products?_sort=${property}&_order=${order}`)
                 .then((res) => {
                     console.log(res.data);
@@ -129,6 +127,7 @@ const ProductsPage = (props) => {
                 })
         }
     }
+
 
     return (
         <div>
@@ -151,7 +150,7 @@ const ProductsPage = (props) => {
                                 </FormGroup>
                                 <FormGroup>
                                     <Label>Sort</Label>
-                                    <Input type="select" style={{ width: "250px" }} value={orderData} onChange={handleSort}>
+                                    <Input type="select" value={orderData} style={{ width: "250px" }} onChange={handleSort}>
                                         <option value="null">Pilih order</option>
                                         <option value="harga-asc">Harga Asc</option>
                                         <option value="harga-desc">Harga Desc</option>
