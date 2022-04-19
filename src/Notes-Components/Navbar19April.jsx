@@ -1,6 +1,6 @@
 import React from 'react';
 // functional component tidak wajib import React namun kalau functional component butuh sistem react hooks pada class component, maka perlu import React
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, ButtonGroup, NavbarText, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Dropdown, DropdownMenu, DropdownItem, Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, ButtonGroup, NavbarText, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ModalLogin from './ModalLogin';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -30,13 +30,17 @@ const NavbarComponent = (props) => {
 
     const [openLogin, setOpenLogin] = React.useState(false)
 
-    const [dropOpen, setDropOpen] = React.useState(false)
+    const [openProfile, setOpenProfile] = React.useState(false)
+
+    const [displayButton, setDisplayButton] = React.useState("d-inline")
 
     const { username } = useSelector((state) => {
         return {
-            username: state.usersReducer.username
+            username: state.usersReducer.username // state.reducerYangMauDiambil.propertiYgMauDiambil
         }
     })
+
+    // console.log("ambil data users reducers", username)
 
     // const [emailLogin, setEmailLogin] = React.useState("")
 
@@ -58,16 +62,11 @@ const NavbarComponent = (props) => {
     //     setOpenLogin(!openLogin)
     // }
 
-    const handleCallbackOpenLogin = (e) => {
-        setOpenLogin(e)
-    }
-
     return (
         <div >
             <ModalLogin
                 modalOpen={openLogin}
                 toggleOpen={() => setOpenLogin(!openLogin)}
-                handleCallbackOpenLogin = {handleCallbackOpenLogin}
             />
 
             {/* navbar responsive di breakpoint medium berarti semua isi navbar muncul, color light = background putih, light untuk membuat tulisan jd gelap krn background putih dan light bertipe data boolean (true/false) valuenya*/}
@@ -103,32 +102,26 @@ const NavbarComponent = (props) => {
                         </NavItem>
                     </Nav>
                     <NavbarText>
-                        {
-                            username ?
-                                <>
-                                    <Dropdown isOpen={dropOpen} toggle={() => setDropOpen(!dropOpen)}>
-                                        <DropdownToggle onClick={() => setDropOpen(!dropOpen)}>
+                        <ButtonGroup>
+                            {
+                                username != "" ?
+                                    <>
+                                        <div
+                                            style={{ cursor: 'pointer', fontWeight: 'bold' }}
+                                            onClick={() => setOpenProfile(!openProfile)} >
                                             {username}
-                                        </DropdownToggle>
-                                        <DropdownMenu end>
-                                            <DropdownItem>
-                                                Profile
-                                            </DropdownItem>
-                                            <DropdownItem>
-                                                Cart
-                                            </DropdownItem>
-                                            <DropdownItem>
-                                                Transactions
-                                            </DropdownItem>
-                                        </DropdownMenu>
-                                    </Dropdown>
-                                </>
-                                :
-                                <>
-                                    <ButtonGroup>
+                                        </div>
+                                        <Collapse isOpen={openProfile}>
+                                            <p>Edit Profile</p>
+                                            <p>Edit Profile</p>
+                                        </Collapse>
+                                    </>
+                                    :
+                                    <>
                                         <Button
                                             type="button"
                                             color="primary"
+                                            className={displayButton}
                                             onClick={() => setOpenLogin(!openLogin)}>
                                             Login
                                         </Button>
@@ -136,14 +129,14 @@ const NavbarComponent = (props) => {
                                             type="button"
                                             color="secondary"
                                             outline
+                                            className={displayButton}
                                             onClick={() => navigate("/register")}
                                         >
                                             Register
                                         </Button>
-                                    </ButtonGroup>
-                                </>
-                        }
-
+                                    </>
+                            }
+                        </ButtonGroup>
                     </NavbarText>
                 </Collapse>
             </Navbar>

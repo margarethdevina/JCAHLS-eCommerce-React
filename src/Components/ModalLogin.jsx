@@ -1,8 +1,15 @@
 import React from 'react';
 import { Modal, ModalBody, Button, FormGroup, Label, Input, InputGroup, InputGroupText } from 'reactstrap';
-
+import Axios from 'axios';
+import { API_URL } from '../helper';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginAction } from '../redux/actions/usersAction';
 
 const ModalLogin = (props) => {
+
+    const dispatch = useDispatch();
+
+    // const [openLogin, setOpenLogin] = React.useState(false)
 
     const [inForm, setInForm] = React.useState({
         email: "",
@@ -13,8 +20,44 @@ const ModalLogin = (props) => {
         setInForm({ ...inForm, [property]: value })
     }
 
-    const handleLogin = () => {
-        alert(`${inForm.email} ${inForm.password}`)
+    React.useEffect(() => {
+        getUsers();
+    }, []);
+
+    const getUsers = () => {
+        Axios.get(`${API_URL}/users`)
+            .then((response) => {
+                // console.log("data awal reducers",response.data)
+                dispatch(loginAction(response.data))
+            }).catch((error) => {
+                console.log(error);
+            })
+    }
+
+    const handleLogin = async () => {
+        // alert(`${inForm.email} ${inForm.password}`)
+
+        try {
+            let filterQuery = "?";
+            if (inForm.email && inForm.password) {
+                filterQuery += `email=${inForm.email}&password=${inForm.password}`;
+                let response = await Axios.get(`${API_URL}/users${filterQuery}`)
+                dispatch(loginAction(response.data))
+                console.log(response.data)
+
+                if (response.data.length == 0) {
+                    alert("Informasi yang dimasukkan tidak tepat, mohon cek kembali")
+                } else {
+                    props.handleCallbackOpenLogin(false)
+                }
+
+            } else {
+                alert("Isi form dengan lengkap")
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const [visibleForm, setVisibleForm] = React.useState({

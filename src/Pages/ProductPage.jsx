@@ -3,9 +3,12 @@ import Axios from 'axios';
 import { Card, CardBody, CardImg, FormGroup, Input, Label, Button, Collapse } from 'reactstrap';
 import { API_URL } from '../helper';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProductsAction } from '../redux/actions/productsAction';
 
 const ProductsPage = (props) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [dbProducts, setDbProducts] = React.useState([]);
     const [filterName, setFilterName] = React.useState("");
     const [filterMin, setFilterMin] = React.useState("");
@@ -16,12 +19,20 @@ const ProductsPage = (props) => {
         getProducts();
     }, []);
 
+    const { products } = useSelector((state) => {
+        return {
+            products: state.productsReducer.products // state.reducerYangMauDiambil.propertiYgMauDiambil
+        }
+    })
+
+
     const getProducts = () => {
         Axios.get(`${API_URL}/products`)
             .then((response) => {
                 // jika berhasil mendapatkan response
                 // console.log("From Component :", response.data);
-                setDbProducts(response.data)
+                // setDbProducts(response.data)
+                dispatch(getProductsAction(response.data))
             }).catch((error) => {
                 // jika tidak berhasil mendapatkan response
                 console.log(error);
@@ -29,7 +40,7 @@ const ProductsPage = (props) => {
     }
 
     const printProducts = () => {
-        return dbProducts.map((value, index) => {
+        return products.map((value, index) => {
             return <div key={value.id} className="col-12 col-md-6 col-lg-4 p-2">
                 <Card className='border-0 bg-transparent'>
                     <CardImg
@@ -54,7 +65,7 @@ const ProductsPage = (props) => {
     }
 
     const handleReset = () => {
-        getProducts();
+        getProducts(); // diperbaharui pakai dispatch juga supaya isi reducer dalam posisi kereset (awal) jadi pas reset diklik otomatis database yg ditarik masih dalam kondisi awal sebelum filter & sortir
         setFilterName("");
         setFilterMin("");
         setFilterMax("");
@@ -106,7 +117,8 @@ const ProductsPage = (props) => {
 
             let response = await Axios.get(`${API_URL}/products${filterQuery}`)
 
-            setDbProducts(response.data)
+            // setDbProducts(response.data)
+            dispatch(getProductsAction(response.data))
 
         } catch (error) {
             console.log(error)
@@ -123,7 +135,8 @@ const ProductsPage = (props) => {
             Axios.get(`${API_URL}/products?_sort=${property}&_order=${order}`)
                 .then((res) => {
                     console.log(res.data);
-                    setDbProducts(res.data);
+                    // setDbProducts(res.data);
+                    dispatch(getProductsAction(res.data))
                 }).catch((err) => {
                     console.log(err)
                 })
