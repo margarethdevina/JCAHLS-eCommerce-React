@@ -1,11 +1,13 @@
 import React from 'react';
 import { Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, NavbarText, ButtonGroup, Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import ModalLogin from './ModalLogin';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { logoutAction } from '../redux/actions/usersAction';
 
 const NavbarComponent = (props) => {
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const [dropOpen, setDropOpen] = React.useState(false)
@@ -51,8 +53,8 @@ const NavbarComponent = (props) => {
                     <NavbarText>
                         {
                             username ?
-                                <Dropdown isOpen={dropOpen} toggle={()=>setDropOpen(!dropOpen)}>
-                                    <DropdownToggle onClick={()=>setDropOpen(!dropOpen)}>
+                                <Dropdown isOpen={dropOpen} toggle={() => setDropOpen(!dropOpen)}>
+                                    <DropdownToggle onClick={() => setDropOpen(!dropOpen)}>
                                         {username}
                                     </DropdownToggle>
                                     <DropdownMenu end>
@@ -64,6 +66,10 @@ const NavbarComponent = (props) => {
                                         </DropdownItem>
                                         <DropdownItem>
                                             Transactions
+                                        </DropdownItem>
+                                        <DropdownItem divider />
+                                        <DropdownItem onClick={() => dispatch(logoutAction())}>
+                                            Logout
                                         </DropdownItem>
                                     </DropdownMenu>
                                 </Dropdown>

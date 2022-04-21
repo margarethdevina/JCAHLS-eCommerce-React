@@ -36,51 +36,38 @@ const ModalLogin = (props) => {
             })
     }
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         // alert(`${inForm.email} ${inForm.password}`)
 
-        // CARA 2
-        if (inForm.email == "" || inForm.password == "") { // proteksi from tidak boleh kosong
-            alert("Fill in all form")
-        } else {
-            if (inForm.email.includes("@")) { // proteksi untuk email
-                Axios.get(`${API_URL}/users?email=${inForm.email}&password=${inForm.password}`)
-                    .then((response) => {
-                        // menyimpan data token pd browser
-                        localStorage.setItem("tokenIdUser", response.data[0].id) // asumsi id ini adalah token, pembuatan token akan dipelajari di back end
-                        dispatch(loginAction(response.data[0])) // pakai [0] krn data yg mau diambil bertipe objek
-                        props.toggleOpen(); // untuk tutup modallogin saat data sudah masuk
-                    }).catch((error) => {
-                        console.log(error);
-                    })
+        try {
+            let filterQuery = "?";
+            if (inForm.email && inForm.password) {
+                filterQuery += `email=${inForm.email}&password=${inForm.password}`;
+                let response = await Axios.get(`${API_URL}/users${filterQuery}`)
+                dispatch(loginAction(response.data))
+                console.log(response.data)
+
+                if (response.data.length == 0) {
+                    alert("Informasi yang dimasukkan tidak tepat, mohon cek kembali")
+                } else {
+                    props.handleCallbackOpenLogin(false)
+                }
+
             } else {
-                alert("Email wrong")
+                alert("Isi form dengan lengkap")
             }
+
+        } catch (error) {
+            console.log(error)
         }
 
-        // CARA 1
-        // parameter async ()
-        // try {
-        //     let filterQuery = "?";
-        //     if (inForm.email && inForm.password) {
-        //         filterQuery += `email=${inForm.email}&password=${inForm.password}`;
-        //         let response = await Axios.get(`${API_URL}/users${filterQuery}`)
-        //         dispatch(loginAction(response.data))
-        //         console.log(response.data)
-
-        //         if (response.data.length == 0) {
-        //             alert("Informasi yang dimasukkan tidak tepat, mohon cek kembali")
-        //         } else {
-        //             props.handleCallbackOpenLogin(false)
-        //         }
-
-        //     } else {
-        //         alert("Isi form dengan lengkap")
-        //     }
-
-        // } catch (error) {
-        //     console.log(error)
+        // Axios.get(`${API_URL}/users?email=${inForm.email}&password=${inForm.password}`)
+        // .then((response)=>{
+        // 
+        // }).catch((error))=>{
+        // console.log(error);
         // }
+
     }
 
     const [visibleForm, setVisibleForm] = React.useState({

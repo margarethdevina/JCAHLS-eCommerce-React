@@ -11,9 +11,15 @@ export const usersReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case "LOGIN_SUCCESS":
             console.log("DPT DATA USERS DR ACTION", action.payload)
-            return { 
+            return {
                 ...state, ...action.payload //karena pakai spread operator properti yg sama akan langsung diisi
             }
+        case "UPDATE_CART":
+            return {
+                ...state, cart: action.payload // memperbaharui properti cart saja
+            }
+        case "LOGOUT":
+            return INITIAL_STATE
         default:
             return state;
     }

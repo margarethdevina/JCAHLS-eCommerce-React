@@ -5,3 +5,18 @@ export const loginAction = (data) => {
         payload: data
     }
 }
+
+export const updateCartAction = (data) => {
+    return {
+        type: "UPDATE_CART",
+        payload: data
+    }
+}
+
+export const logoutAction = () => {
+    localStorage.removeItem("tokenIdUser")
+    return {
+        type: "LOGOUT"
+    }
+}
+

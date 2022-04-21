@@ -1,7 +1,7 @@
 import React from 'react';
 // functional component tidak wajib import React namun kalau functional component butuh sistem react hooks pada class component, maka perlu import React
 import { Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, ButtonGroup, NavbarText, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import ModalLogin from './ModalLogin';
+import ModalLogin from './ModalLogin19Apr';
 
 // hooks fitur untuk membuat functional component sama dengan class component
 // adanya hooks, functional component bisa menggunakan state

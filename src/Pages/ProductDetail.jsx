@@ -2,9 +2,12 @@ import React from 'react';
 import Axios from 'axios';
 import { API_URL } from '../helper';
 import { Button, Collapse, Input, Toast, ToastBody, ToastHeader } from 'reactstrap';
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateCartAction } from '../redux/actions/usersAction';
 
 const ProductDetail = (props) => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const { state, search } = useLocation()
 
@@ -14,11 +17,19 @@ const ProductDetail = (props) => {
     const [openType, setOpenType] = React.useState(false);
     const [qty, setQty] = React.useState(1);
     const [openToast, setOpenToast] = React.useState(false);
+    const [toastMsg, setToastMsg] = React.useState("");
+
+    const { role, id, cart } = useSelector((state) => {
+        return {
+            role: state.usersReducer.role,
+            id: state.usersReducer.id,
+            cart: state.usersReducer.cart,
+        }
+    })
 
     React.useEffect(() => {
         getDetail()
     }, []);
-
 
     const getDetail = () => {
         Axios.get(`${API_URL}/products${search}`)
@@ -48,33 +59,118 @@ const ProductDetail = (props) => {
         })
     }
 
-    const handleAdd = () => {
-        console.log(selectedType.qty)
+    const handleInc = () => {
+        let temp = qty;
         if (selectedType.qty) {
-            let temp = qty
             if (temp < selectedType.qty) {
-                temp += 1
-                setQty(temp)
-                console.log(temp)
-            } else if (temp == selectedType.qty) {
-                console.log("max")
+                setQty(temp += 1)
+            } else {
                 setOpenToast(!openToast)
-                console.log(openToast)
+                setToastMsg("Stock tidak mencukupi")
             }
+        } else {
+            setOpenToast(!openToast)
+            setToastMsg("Pilih type terlebih dahulu")
+        }
+
+
+        // console.log(selectedType.qty)
+        // if (selectedType.qty) {
+        //     let temp = qty
+        //     if (temp < selectedType.qty) {
+        //         temp += 1
+        //         setQty(temp)
+        //         console.log(temp)
+        //     } else if (temp == selectedType.qty) {
+        //         console.log("max")
+        //         setOpenToast(!openToast)
+        //         console.log(openToast)
+        //     }
+        // }
+    }
+
+    const handleDec = () => {
+        let temp = qty;
+        if (temp > 1) {
+            setQty(temp -= 1)
+        }
+
+        // let temp = qty
+        // if (temp > 1) {
+        //     temp -= 1
+        //     setQty(temp)
+        // }
+        // console.log(temp)
+    }
+
+    const handleQty = (e) => {
+        if (parseInt(e.target.value) > 0 && parseInt(e.target.value) < selectedType.qty) {
+            setQty(parseInt(e.target.value))
         }
     }
 
-    const handleMinus = () => {
-        let temp = qty
-        if (temp > 1) {
-            temp -= 1
-            setQty(temp)
+    // Jika dia admin atau orang yg belum login, dia tidak bisa menambah produk ke keranjang
+    const handleAddtoCart = () => {
+
+        if (role == "user") { // proteksi role
+            if (selectedType.qty) { // proteksi type sudah dipilih atau belum
+                // fungsi menambah produk ke dalam keranjang
+
+                // cari index yang sesuai kondisi findIndex
+                let filterCart = cart.findIndex(val => val.idProduct == detail.id && val.type == selectedType.type)
+
+                if (filterCart >= 0) {
+                    cart[filterCart].qty += qty
+                } else {
+                    cart.push({
+                        idProduct: detail.id,
+                        img: detail.images[0],
+                        nama: detail.nama,
+                        type: selectedType.type,
+                        qty,
+                        harga: detail.harga
+                    })
+                }
+
+                // axios.patch untuk melakukan editing
+                Axios.patch(`${API_URL}/users/${id}`, {
+                    cart
+                }).then((res) => {
+                    // console.log(res.data) // dapatnya objek
+                    dispatch(updateCartAction(res.data.cart))
+                    alert("Add product success ✅")
+                }).catch((err) => {
+                    console.log(err)
+                })
+
+            } else {
+                // alert pilih type dulu
+                setOpenToast(!openToast)
+                setToastMsg("Pilih type terlebih dahulu")
+            }
+        } else {
+            // alert jika belum login sebagai user
+            setOpenToast(!openToast)
+            setToastMsg("Silahkan Login sebagai user terlebih dahulu")
         }
-        console.log(temp)
+    }
+
+    if (openToast) { //otomatis saat semua toast == true / muncul, dalam 3.5 detik toast akan tertutup
+        setTimeout(() => setOpenToast(!openToast), 3500)
     }
 
     return (
         <div>
+
+            <Toast isOpen={openToast} style={{ position: "fixed", right: "10px" }}>
+                <ToastHeader icon="warning" toggle={() => setOpenToast(!openToast)}>
+                    Add to cart warning
+                </ToastHeader>
+                <ToastBody>
+                    <span>{toastMsg}</span>
+                </ToastBody>
+            </Toast>
+
             <div className="container row p-5 m-auto bg-white rounded">
                 {
                     detail.id &&
@@ -128,7 +224,7 @@ const ProductDetail = (props) => {
                                 <span style={{ width: '30%', display: 'flex', alignItems: 'center' }}>
 
                                     <span
-                                        onClick={handleMinus}
+                                        onClick={handleDec}
                                         className="material-icons p-1 text-white shadow-sm"
                                         style={{ cursor: 'pointer', backgroundColor: "#9C867B", borderRadius: "45px" }} >
                                         remove
@@ -141,10 +237,12 @@ const ProductDetail = (props) => {
                                         style={{
                                             width: "40%", fontSize: "24px", fontWeight: "bolder", textAlign: "center",
                                             border: 0
-                                        }} />
+                                        }}
+                                        onChange={handleQty}
+                                    />
 
                                     <span
-                                        onClick={handleAdd}
+                                        onClick={handleInc}
                                         className="material-icons p-1 text-white shadow-sm"
                                         style={{
                                             cursor: 'pointer',
@@ -156,21 +254,17 @@ const ProductDetail = (props) => {
 
                                 </span>
                             </div>
-                            <Button type="button" color="secondary" outline style={{ width: '100%' }} >Add to cart</Button>
+                            <Button
+                                type="button"
+                                color="secondary"
+                                outline
+                                style={{ width: '100%' }}
+                                onClick={handleAddtoCart}
+                            >Masukkan ke Keranjang</Button>
                         </div>
                     </>
                 }
             </div>
-
-                    <Toast isOpen={openToast}
-                        className="position-absolute top-0 end-0"
-                    >
-                        <ToastHeader toggle={() => setOpenToast(!openToast)}>
-                        </ToastHeader>
-                        <ToastBody>
-                            <h3>Jumlah melebihi stok</h3>
-                        </ToastBody>
-                    </Toast>
 
         </div >
     )

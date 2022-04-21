@@ -10,8 +10,9 @@ import ProductDetail from './Pages/ProductDetail';
 import Axios from 'axios';
 import { API_URL } from './helper';
 import React from 'react';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getProductsAction } from './redux/actions/productsAction';
+import { loginAction } from './redux/actions/usersAction';
 // FUNCTIONAL COMPONENT
 // Initialize component
 function App() {
@@ -19,7 +20,12 @@ function App() {
   // untuk mengeksekusi action pada redux, dan menghubungkannya ke reducer by sistem redux
   const dispatch = useDispatch();
   // function and data
-  let data = []
+
+  const { role } = useSelector((state) => {
+    return {
+      role: state.usersReducer.role
+    }
+  })
 
   const getProducts = () => {
     Axios.get(`${API_URL}/products`)
@@ -31,8 +37,22 @@ function App() {
       })
   }
 
+  const keepLogin = () => {
+    let token = localStorage.getItem("tokenIdUser")
+    if (token) {
+      Axios.get(`${API_URL}/users?id=${token}`)
+        .then((res) => {
+          localStorage.setItem("tokenIdUser", res.data[0].id)
+          dispatch(loginAction(res.data[0]));
+        }).catch((error) => {
+          console.log(error);
+        })
+    }
+  }
+
   React.useEffect(() => {
-    getProducts()
+    keepLogin();
+    getProducts();
   }, [])
 
   // return html component
@@ -43,8 +63,13 @@ function App() {
         <Route path='/' element={<LandingPage />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/products' element={<ProductsPage />} />
-        <Route path='/products/admin' element={<ProductsAdmin />} />
         <Route path='/product/detail' element={<ProductDetail />} />
+        {
+          role == "admin" ?
+            <Route path='/products/admin' element={<ProductsAdmin />} />
+            :
+            <></>
+        }
       </Routes>
     </div>
   );

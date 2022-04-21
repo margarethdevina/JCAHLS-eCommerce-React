@@ -3,13 +3,16 @@ import React from 'react';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, ButtonGroup, NavbarText, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ModalLogin from './ModalLogin';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutAction } from '../redux/actions/usersAction';
 
 // hooks fitur untuk membuat functional component sama dengan class component
 // adanya hooks, functional component bisa menggunakan state
 // react hooks ada banyak di library manapun
 
 const NavbarComponent = (props) => {
+
+    const dispatch = useDispatch();
 
     const navigate = useNavigate();
     // useNavigate sebuah fungsi yg mereturn sebuah fungsi jadi supaya ga bingung (daripada useNavigate()()) sebaiknya ditampung ke variabel
@@ -32,9 +35,10 @@ const NavbarComponent = (props) => {
 
     const [dropOpen, setDropOpen] = React.useState(false)
 
-    const { username } = useSelector((state) => {
+    const { username, role } = useSelector((state) => {
         return {
-            username: state.usersReducer.username
+            username: state.usersReducer.username,
+            role: state.usersReducer.role
         }
     })
 
@@ -58,27 +62,23 @@ const NavbarComponent = (props) => {
     //     setOpenLogin(!openLogin)
     // }
 
-    const handleCallbackOpenLogin = (e) => {
-        setOpenLogin(e)
-    }
-
     return (
-        <div >
+        <div className='bg-light'>
             <ModalLogin
                 modalOpen={openLogin}
                 toggleOpen={() => setOpenLogin(!openLogin)}
-                handleCallbackOpenLogin = {handleCallbackOpenLogin}
             />
 
             {/* navbar responsive di breakpoint medium berarti semua isi navbar muncul, color light = background putih, light untuk membuat tulisan jd gelap krn background putih dan light bertipe data boolean (true/false) valuenya*/}
-            <Navbar color="light" light expand="md">
+            <Navbar color="light" className='container' light expand="md">
                 {/* cursor pointer untuk munculin tangan saat dihover */}
                 <NavbarBrand
                     style={{ cursor: "pointer" }}
                     onClick={() => navigate("/")}>
-                    <span className="fw-bold">
+                    <img src={require("../Assets/logo.png")} width="100px" alt='logo-commerce' />
+                    {/* <span className="fw-bold">
                         Commerce
-                    </span>
+                    </span> */}
                 </NavbarBrand>
                 <NavbarToggler onClick={() => setOpenCollapse(!openCollapse)} />
                 <Collapse navbar isOpen={openCollapse}>
@@ -114,11 +114,29 @@ const NavbarComponent = (props) => {
                                             <DropdownItem>
                                                 Profile
                                             </DropdownItem>
-                                            <DropdownItem>
-                                                Cart
-                                            </DropdownItem>
-                                            <DropdownItem>
-                                                Transactions
+                                            {
+                                                role == "user" ?
+                                                    <>
+                                                        <DropdownItem onClick={() => navigate('/cart')}>
+                                                            Cart
+                                                        </DropdownItem>
+                                                        <DropdownItem onClick={() => navigate('/transactions')}>
+                                                            Transactions
+                                                        </DropdownItem>
+                                                    </>
+                                                    :
+                                                    <>
+                                                        <DropdownItem onClick={() => navigate("/products/admin")}>
+                                                            Management Products
+                                                        </DropdownItem>
+                                                        <DropdownItem onClick={() => navigate("/transactions/admin")}>
+                                                            Management Transactions
+                                                        </DropdownItem>
+                                                    </>
+                                            }
+                                            <DropdownItem divider />
+                                            <DropdownItem onClick={() => dispatch(logoutAction())}>
+                                                Logout
                                             </DropdownItem>
                                         </DropdownMenu>
                                     </Dropdown>

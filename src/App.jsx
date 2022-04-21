@@ -10,9 +10,13 @@ import ProductDetail from "./Pages/ProductDetail";
 import Axios from 'axios';
 import { API_URL } from './helper';
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getProductsAction } from './redux/actions/productsAction';
-import { getUsersAction } from './redux/actions/usersAction';
+import { loginAction } from './redux/actions/usersAction';
+import TransactionsAdminPage from './Pages/TransactionsAdmin';
+import CartPage from './Pages/Cart';
+import TransactionsPage from './Pages/Transactions';
+import NotFoundPage from './Pages/404';
 
 // metode pembuatan komponen pd react menggunakan metode FUNCTIONAL COMPONENT
 // metode ini paling sering digunakan saat ini dibandingkan class component
@@ -20,43 +24,76 @@ import { getUsersAction } from './redux/actions/usersAction';
 // FUNCTIONAL COMPONENT
 function App() { //INITIALIZE COMPONENT
 
-    // dispatch mengeksekusi action pada redux dan menghubungkannya ke reducer by sistem redux makannya di productsReducer ga diimport productsAction lagi
-    const dispatch = useDispatch();
+  // dispatch mengeksekusi action pada redux dan menghubungkannya ke reducer by sistem redux makannya di productsReducer ga diimport productsAction lagi
+  const dispatch = useDispatch();
 
-    // FUNCTION AND DATA
-    let data = [];
+  const { role } = useSelector((state) => {
+    return {
+      role: state.usersReducer.role
+    }
+  })
 
-    const getProducts = () => {
-      Axios.get(`${API_URL}/products`)
-        .then((response) => {
-          console.log(response.data)
-          dispatch(getProductsAction(response.data))
+  // FUNCTION AND DATA
+  let data = [];
+
+  const getProducts = () => {
+    Axios.get(`${API_URL}/products`)
+      .then((response) => {
+        console.log(response.data)
+        dispatch(getProductsAction(response.data))
+      }).catch((error) => {
+        console.log(error)
+      })
+  }
+
+  const keepLogin = () => {
+    let token = localStorage.getItem("tokenIdUser")
+    if (token) {
+      Axios.get(`${API_URL}/users?id=${token}`)
+        .then((res) => {
+          localStorage.setItem("tokenIdUser", res.data[0].id)
+          dispatch(loginAction(res.data[0]));
         }).catch((error) => {
-          console.log(error)
+          console.log(error);
         })
     }
-
-    React.useEffect(() => {
-      getProducts()
-    }, [])
-
-    // RETURN HTML COMPONENT
-    // return disini skrg bisa langsung mereturn tanpa dalam bentuk string sekarang
-    return (
-      <div>
-        {/* NavbarComponent ga masuk Routes karena bersifat tetap */}
-        <Navbar />
-        <Routes>
-          {/* untuk home pakai path='/' */}
-          <Route path='/' element={<LandingPage />} />
-          <Route path='/register' element={<RegisterPage />} />
-          <Route path='/products' element={<ProductPage />} />
-          <Route path='/products/admin' element={<ProductsAdmin />} />
-          <Route path='/product/detail' element={<ProductDetail />} />
-        </Routes>
-      </div>
-    );
   }
+
+  React.useEffect(() => {
+    keepLogin();
+    getProducts();
+  }, [])
+
+  // RETURN HTML COMPONENT
+  // return disini skrg bisa langsung mereturn tanpa dalam bentuk string sekarang
+  return (
+    <div>
+      {/* NavbarComponent ga masuk Routes karena bersifat tetap */}
+      <Navbar />
+      <Routes>
+        {/* untuk home pakai path='/' */}
+        <Route path='/' element={<LandingPage />} />
+        <Route path='/register' element={<RegisterPage />} />
+        <Route path='/products' element={<ProductPage />} />
+        <Route path='/product/detail' element={<ProductDetail />} />
+        {
+          role == "admin" ?
+            <>
+              <Route path='/products/admin' element={<ProductsAdmin />} />
+              <Route path='/transactions/admin' element={<TransactionsAdminPage />} />
+            </>
+            :
+            <>
+            <Route path='/cart' element={<CartPage />} />
+            <Route path='/transactions' element={<TransactionsPage />} />
+            </>
+        }
+        <Route path='*' element={<NotFoundPage />} />
+        
+      </Routes>
+    </div>
+  );
+}
 
 // export default untuk mengekspor komponen agar dpt ditampilkan oleh virtualDOM react
 export default App;
