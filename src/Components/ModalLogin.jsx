@@ -40,7 +40,7 @@ const ModalLogin = (props) => {
         // alert(`${inForm.email} ${inForm.password}`)
 
         // CARA 2
-        if (inForm.email == "" || inForm.password == "") { // proteksi from tidak boleh kosong
+        if (inForm.email == "" || inForm.password == "") { // proteksi form tidak boleh kosong
             alert("Fill in all form")
         } else {
             if (inForm.email.includes("@")) { // proteksi untuk email

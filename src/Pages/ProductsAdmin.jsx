@@ -5,6 +5,7 @@ import { Button, Input, FormGroup, Label, ButtonGroup } from "reactstrap";
 import ModalDetail from "../Components/ModalDetail";
 import { useDispatch, useSelector } from 'react-redux';
 import { getProductsAction } from '../redux/actions/productsAction';
+import ModalAddProduct from "../Components/ModalAddProduct";
 
 const ProductsAdmin = (props) => {
 
@@ -12,6 +13,7 @@ const ProductsAdmin = (props) => {
 
     const [dbProducts, setDbProducts] = React.useState([]);
     const [openDetail, setOpenDetail] = React.useState(false);
+    const [openAddProduct, setOpenAddProduct] = React.useState(false);
     const [selectedIdx, setSelectedIdx] = React.useState(null);
     const [paginate, setPaginate] = React.useState(1);
     const [limit, setLimit] = React.useState(5);
@@ -84,49 +86,51 @@ const ProductsAdmin = (props) => {
     }
 
     const printProducts = () => {
-        return products.map((value, index) => {
-            let stocks = value.stock
-            let totalStocks = 0;
-            stocks.forEach(stocksval => totalStocks += stocksval.qty)
+        if (products.length > 0) {
+            return products.map((value, index) => {
+                let stocks = value.stock
+                let totalStocks = 0;
+                stocks.forEach(stocksval => totalStocks += stocksval.qty)
 
-            return <tr key={value.id} className="align-middle">
-                <td className="fw-bold">{paginate > 1 ? (paginate - 1) * limit + index + 1 : index + 1}</td>
-                {/* untuk ngeprint index + 1 bisa diapit pakai <th></th> juga karena elemen <th> otomatis ada style fw-bold nya plus 1 kolom & baris ini cuma berisi 1 macam data aja yg mau ditampilkan alas si index+1 itu */}
-                <td>
-                    <img
-                        alt={`${value.id}-${value.nama}`}
-                        src={value.images[0]}
-                        width="150px"
-                    />
-                </td>
-                <td>
-                    <span className="fw-bold">{value.nama}</span>
-                    <br />
-                    <span className='text-muted'>{value.kategori}</span>
-                </td>
-                <td>{totalStocks.toLocaleString()}</td>
-                <td>IDR {value.harga.toLocaleString()}</td>
-                <td>
-                    <Button
-                        type="button"
-                        outline
-                        color="info"
-                        className="w-100 my-2"
-                        onClick={() => handleDetail(index)}>
-                        Detail
-                    </Button>
-                    <Button
-                        type="button"
-                        outline
-                        color="warning"
-                        className="w-100 my-2"
-                        onClick={() => handleDelete(value.id)}>
-                        Delete
-                    </Button>
-                </td>
-            </tr>
+                return <tr key={value.id} className="align-middle">
+                    <td className="fw-bold">{paginate > 1 ? (paginate - 1) * limit + index + 1 : index + 1}</td>
+                    {/* untuk ngeprint index + 1 bisa diapit pakai <th></th> juga karena elemen <th> otomatis ada style fw-bold nya plus 1 kolom & baris ini cuma berisi 1 macam data aja yg mau ditampilkan alas si index+1 itu */}
+                    <td>
+                        <img
+                            alt={`${value.id}-${value.nama}`}
+                            src={value.images[0]}
+                            width="150px"
+                        />
+                    </td>
+                    <td>
+                        <span className="fw-bold">{value.nama}</span>
+                        <br />
+                        <span className='text-muted'>{value.kategori}</span>
+                    </td>
+                    <td>{totalStocks.toLocaleString()}</td>
+                    <td>IDR {value.harga.toLocaleString()}</td>
+                    <td>
+                        <Button
+                            type="button"
+                            outline
+                            color="info"
+                            className="w-100 my-2"
+                            onClick={() => handleDetail(index)}>
+                            Detail
+                        </Button>
+                        <Button
+                            type="button"
+                            outline
+                            color="warning"
+                            className="w-100 my-2"
+                            onClick={() => handleDelete(value.id)}>
+                            Delete
+                        </Button>
+                    </td>
+                </tr>
 
-        })
+            })
+        }
     }
 
     const handleDelete = (id) => {
@@ -200,9 +204,36 @@ const ProductsAdmin = (props) => {
         }
     }
 
+    const handleCallbackDetail = (data) => {
+        console.log("bisa ke callback?",data)
+        getProducts()
+        handleToogle()
+    }
+
     return (
         <div className="container py-4">
-            <h3>Products Admin</h3>
+            <div className="d-flex justify-content-between">
+                <h3>Products Admin</h3>
+
+                <span
+                    className="material-icons p-2 m-2 text-white shadow-sm"
+                    style={{
+                        cursor: 'pointer',
+                        backgroundColor: "green",
+                        width: "40px",
+                        right: "20px"
+                    }}
+                    onClick={() => setOpenAddProduct(!openAddProduct)}
+                >
+                    add
+                </span>
+            </div>
+
+            <ModalAddProduct
+                openAddProduct={openAddProduct}
+                toggle={() => setOpenAddProduct(!openAddProduct)}
+
+            />
 
             {
                 selectedIdx >= 0 && selectedIdx != null ?
@@ -210,6 +241,7 @@ const ProductsAdmin = (props) => {
                         openDetail={openDetail}
                         toggle={handleToogle}
                         data={products[selectedIdx]}
+                        handleCallbackDetail = {handleCallbackDetail}
                     />
                     :
                     null

@@ -113,7 +113,7 @@ const ProductDetail = (props) => {
     const handleAddtoCart = () => {
 
         if (role == "user") { // proteksi role
-            if (selectedType.qty) { // proteksi type sudah dipilih atau belum
+            if (selectedType.type) { // proteksi type sudah dipilih atau belum
                 // fungsi menambah produk ke dalam keranjang
 
                 // cari index yang sesuai kondisi findIndex
